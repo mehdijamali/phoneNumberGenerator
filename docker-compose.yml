@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"  # Standard RabbitMQ port
+      - "15672:15672"  # Management plugin
+    volumes:
+      - "rabbitmq_data:/var/lib/rabbitmq"
+    networks:
+      - app-network
+
+  numbergenerator:
+    build: ./numberGenerator  # Path to your number generator service directory
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq  # Uses the service name as the host
+    networks:
+      - app-network
+
+volumes:
+  rabbitmq_data:
+
+networks:
+  app-network:
+    driver: bridge
