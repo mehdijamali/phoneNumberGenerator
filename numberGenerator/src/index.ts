@@ -42,7 +42,7 @@ async function handleRequest(
     responseQueue,
     Buffer.from(JSON.stringify(response)),
     {
-      persistent: true,
+      persistent: false,
     }
   );
 

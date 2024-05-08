@@ -1,3 +1,4 @@
+import parsePhoneNumberFromString from "libphonenumber-js";
 import {
   generateValidPhoneNumbers,
   generateRandomPhoneNumbers,
@@ -16,8 +17,9 @@ describe("getRandomPhoneNumbers", () => {
 
 describe("generateValidPhoneNumbers", () => {
   it("should return a valid phone number", () => {
-    const number = generateValidPhoneNumbers();
-
-    console.log(number);
+    const phoneNumber = parsePhoneNumberFromString(
+      String(`+${generateValidPhoneNumbers()}`)
+    );
+    expect(Boolean(phoneNumber?.isValid())).toBeTruthy();
   });
 });

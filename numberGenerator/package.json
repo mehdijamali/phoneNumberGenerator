@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "NODE_ENV=test vite-node src/index.ts",
     "prod": "NODE_ENV=production vite-node src/index.ts",
-    "test": "jest",
+    "test": "jest --config jest.unit.config.cjs",
+    "test:unit": "jest --config jest.unit.config.cjs",
     "test:integration": "jest --config jest.integration.config.cjs  --forceExit",
     "test:all": "./test-runner.sh"
   },

@@ -38,12 +38,6 @@ describe("RabbitMQ Integration", () => {
       consumerTag = null;
     }
   });
-  // beforeEach(async () => {
-  //   if (rabbitmq && rabbitmq.channel) {
-  //     await rabbitmq.channel?.purgeQueue(requestQueue);
-  //     await rabbitmq.channel?.purgeQueue(responseQueue);
-  //   }
-  // });
 
   test("should process a random phone generation request and send a response to the response queue", async () => {
     const testRequest = {
@@ -51,7 +45,6 @@ describe("RabbitMQ Integration", () => {
       type: "RANDOM",
     };
 
-    // Ensure queues are ready
     await rabbitmq.channel?.assertQueue(requestQueue, { durable: true });
     await rabbitmq.channel?.assertQueue(responseQueue, { durable: true });
 
@@ -79,7 +72,6 @@ describe("RabbitMQ Integration", () => {
         .then((ok) => (consumerTag = ok.consumerTag));
     });
 
-    // Wait for the response to be consumed
     const receivedMessage: any = await responsePromise;
 
     expect(receivedMessage.requestId).toEqual(testRequest.id);
@@ -91,7 +83,6 @@ describe("RabbitMQ Integration", () => {
       type: "VALID",
     };
 
-    // Ensure queues are ready
     await rabbitmq.channel?.assertQueue(requestQueue, { durable: true });
     await rabbitmq.channel?.assertQueue(responseQueue, { durable: true });
 
@@ -119,7 +110,6 @@ describe("RabbitMQ Integration", () => {
         .then((ok) => (consumerTag = ok.consumerTag));
     });
 
-    // Wait for the response to be consumed
     const receivedMessage: any = await responsePromise;
 
     expect(receivedMessage.requestId).toEqual(testRequest.id);
