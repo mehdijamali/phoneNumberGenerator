@@ -1,56 +1,54 @@
 import amqp, { Message } from "amqplib";
-import { getRandomPhoneNumbers } from "./utils.ts";
+import {
+  generateValidPhoneNumbers,
+  generateRandomPhoneNumbers,
+} from "./utils.ts";
 
-interface Request {
+import mqConnection, { RabbitMQConnection } from "./connection.ts";
+
+export interface Request {
   id: string;
+  type: "RANDOM" | "VALID";
 }
 
-async function startService() {
-  const conn = await amqp.connect("amqp://localhost");
-  const channel = await conn.createChannel();
-  const queueName = "phone_number_requests";
+export async function startService(): Promise<RabbitMQConnection> {
+  if (!mqConnection.connection) await mqConnection.connect();
+  mqConnection.consume(
+    process.env.NUMBER_GENERATOR_QUEUE || "phone_number_requests",
+    handleRequest
+  );
 
-  await channel.assertQueue(queueName, { durable: true });
-  channel.consume(queueName, async (msg: Message | null) => {
-    if (msg !== null) {
-      const request = JSON.parse(msg.content.toString());
-      const response = await handleRequest(request, channel);
-      console.log(response);
-      channel.ack(msg);
-    }
-  });
-
-  // Publishing a test request
-  const testRequest = {
-    id: "test123",
-  };
-  channel.sendToQueue(queueName, Buffer.from(JSON.stringify(testRequest)), {
-    persistent: true,
-  });
-
-  setInterval(() => {
-    channel.sendToQueue(queueName, Buffer.from(JSON.stringify(testRequest)), {
-      persistent: true,
-    });
-  }, 1000);
+  return mqConnection;
 }
 
-async function handleRequest(request: Request, channel: amqp.Channel) {
-  const number = getRandomPhoneNumbers(); // Assuming this returns the phone number immediately
+async function handleRequest(
+  request: Request,
+  channel: amqp.Channel | null
+): Promise<void> {
+  const responseQueue =
+    process.env.METADATA_CLIENT_QUEUE || "phone_number_responses";
+  await channel?.assertQueue(responseQueue, { durable: true });
+
+  const number =
+    request.type === "RANDOM"
+      ? generateRandomPhoneNumbers()
+      : generateValidPhoneNumbers();
   const response = {
     requestId: request.id,
     phoneNumber: number,
   };
 
-  channel.sendToQueue(
-    "phone_number_responses",
+  await channel?.sendToQueue(
+    responseQueue,
     Buffer.from(JSON.stringify(response)),
     {
       persistent: true,
     }
   );
 
-  return `Generated number for request ${request.id}: ${number}`;
+  console.log(
+    `Phone number generator - Generated number for request ${request.id}`
+  );
 }
 
 startService().catch(console.warn);
