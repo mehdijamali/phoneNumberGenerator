@@ -21,6 +21,8 @@ describe("getPhoneNumberMetadata", () => {
   it("should detect correctly if a phone number is mobile phone for the Netherlands ", () => {
     const number = getPhoneNumberMetadata(31642420290);
 
+    console.log(number);
+
     expect(number).toHaveProperty("isMobile");
     expect(number?.isMobile).toBeTruthy();
   });

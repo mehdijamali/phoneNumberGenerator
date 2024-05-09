@@ -6,7 +6,7 @@
     "dev": "NODE_ENV=test vite-node src/index.ts",
     "prod": "NODE_ENV=production vite-node src/index.ts",
     "test:unit": "jest --config jest.unit.config.cjs",
-    "test:integration": "jest --config jest.integration.config.cjs  --forceExit",
+    "test:integration": "jest --config jest.integration.config.cjs  --detectOpenHandles",
     "test:all": "./test-runner.sh"
   },
   "keywords": [],
@@ -26,9 +26,12 @@
   },
   "dependencies": {
     "@types/amqplib": "^0.10.5",
+    "@types/mongoose": "^5.11.97",
     "amqplib": "^0.10.4",
     "dotenv": "^16.4.5",
     "libphonenumber-js": "^1.11.1",
+    "mongodb": "^6.6.1",
+    "mongoose": "^8.3.4",
     "vite-node": "^1.6.0"
   }
 }

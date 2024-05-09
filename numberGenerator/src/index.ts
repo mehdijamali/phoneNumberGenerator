@@ -1,7 +1,7 @@
-import amqp, { Message } from "amqplib";
+import amqp from "amqplib";
 import {
-  generateValidPhoneNumbers,
   generateRandomPhoneNumbers,
+  generateValidPhoneNumbers,
 } from "./utils.ts";
 
 import mqConnection, { RabbitMQConnection } from "./connection.ts";
