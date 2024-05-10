@@ -10,12 +10,17 @@ services:
       - "rabbitmq_data:/var/lib/rabbitmq"
     networks:
       - app-network
+    healthcheck:
+      test: rabbitmq-diagnostics -q status && rabbitmq-diagnostics -q check_local_alarms
+      interval: 1s
+      timeout: 10s
+      retries: 5
 
   mongodb:
     image: mongo:latest
     ports:
       - "27018:27017" 
-    command: ["--quiet"]
+    restart: always
     environment:
       MONGO_DB_HOST: host.docker.internal
       MONGO_INITDB_ROOT_USERNAME: mongo_user
@@ -35,6 +40,7 @@ services:
     build: ./numberGenerator
     ports:
       - "3001:3001"
+    restart: always
     depends_on:
      - rabbitmq
     environment:
@@ -49,6 +55,7 @@ services:
     build: ./metadataClient
     ports:
       - "4001:4001"
+    restart: always
     depends_on:
       - rabbitmq
     environment:
