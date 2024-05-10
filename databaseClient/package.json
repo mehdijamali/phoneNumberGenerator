@@ -9,7 +9,7 @@
     "dev": "NODE_ENV=test vite-node src/index.ts",
     "test:unit": "jest --config jest.unit.config.cjs",
     "test:integration": "jest --config jest.integration.config.cjs  --detectOpenHandles",
-    "test:all": "./test-runner.sh"
+    "test:integration:run": "./test-runner.sh"
   },
   "keywords": [],
   "author": "",
