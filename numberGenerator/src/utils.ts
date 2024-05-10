@@ -15,7 +15,10 @@ export function generateValidPhoneNumbers() {
     phoneNumber = parsePhoneNumberFromString(
       String(`+${generateRandomPhoneNumbers()}`)
     );
-    isValid = Boolean(phoneNumber?.isValid());
+
+    isValid = Boolean(
+      phoneNumber?.isValid() && phoneNumber?.countryCallingCode
+    );
   } while (!isValid);
 
   return `${phoneNumber?.countryCallingCode}${phoneNumber?.nationalNumber}`;
