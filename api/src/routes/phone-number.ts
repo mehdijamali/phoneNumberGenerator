@@ -22,29 +22,55 @@ const router = Router();
  *         schema:
  *           type: integer
  *           default: 0
- *         description: Number of records to skip for pagination
+ *         description: Number of records to skip for pagination.
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
- *         description: Maximum number of records to return
+ *           default: 100
+ *           maximum: 5000
+ *         description: Maximum number of records to return. Request will fail with a 400 error if the limit exceeds 5000.
  *     responses:
  *       200:
- *         description: A list of phone numbers
+ *         description: A list of phone numbers.
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/PhoneNumber'
+ *       400:
+ *         description: The requested limit exceeds the maximum allowed of 5000 records.
  *       500:
- *         description: Server error
+ *         description: Server error.
  */
 router.get("/", async (req: Request, res: Response) => {
   const skip = parseInt(req.query.skip as string) || 0;
   const limit = parseInt(req.query.limit as string) || 100;
-  const data = await PhoneNumbersController.findAll(skip, limit);
-  res.json(data);
+
+  if (limit > 5000) {
+    return res.status(400).json({
+      message: "The limit cannot exceed 5000 records.",
+    });
+  }
+
+  try {
+    const data = await PhoneNumbersController.findAll(skip, limit);
+    const count = await PhoneNumbersController.countAll();
+
+    res.json({
+      data,
+      count,
+    });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Failed to retrieve data:", error.message);
+      res.status(500).json({ message: "Server error", error: error.message });
+    } else {
+      console.error("Unexpected error:", error);
+      res.status(500).json({ message: "Unexpected server error" });
+    }
+  }
 });
 
 /**
@@ -59,26 +85,28 @@ router.get("/", async (req: Request, res: Response) => {
  *         schema:
  *           type: string
  *         required: true
- *         description: Country code to filter phone numbers
+ *         description: Country code to filter phone numbers.
  *       - in: query
  *         name: skip
  *         schema:
  *           type: integer
  *           default: 0
- *         description: Number of records to skip for pagination
+ *         description: Number of records to skip for pagination.
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
- *         description: Maximum number of records to return
+ *           default: 100
+ *           maximum: 5000
+ *         description: Maximum number of records to return. Request will fail with a 400 error if the limit exceeds 5000.
  *       - in: query
  *         name: mobileOnly
  *         schema:
  *           type: boolean
- *         description: Filter to only include mobile numbers if true
+ *         description: Filter to only include mobile numbers if true.
  *     responses:
  *       200:
- *         description: A list of phone numbers filtered by country code, along with the total count
+ *         description: A list of phone numbers filtered by country code, along with the total count.
  *         content:
  *           application/json:
  *             schema:
@@ -90,13 +118,14 @@ router.get("/", async (req: Request, res: Response) => {
  *                     $ref: '#/components/schemas/PhoneNumber'
  *                 count:
  *                   type: integer
- *                   description: Total count of phone numbers matching the criteria
+ *                   description: Total count of phone numbers matching the criteria.
+ *       400:
+ *         description: The requested limit exceeds the maximum allowed of 5000 records.
  *       404:
- *         description: Country code not found
+ *         description: Country code not found.
  *       500:
- *         description: Server error
+ *         description: Server error.
  */
-
 router.get("/:countryCode", async (req: Request, res: Response) => {
   try {
     const countryCode = req.params.countryCode.toUpperCase();
@@ -104,6 +133,12 @@ router.get("/:countryCode", async (req: Request, res: Response) => {
 
     const skip = parseInt(req.query.skip as string) || 0;
     const limit = parseInt(req.query.limit as string) || 100;
+
+    if (limit > 5000) {
+      return res.status(400).json({
+        message: "The limit cannot exceed 5000 records.",
+      });
+    }
     const data = await PhoneNumbersController.findAllByCountryCode(
       countryCode,
       skip,
@@ -144,11 +179,11 @@ router.get("/:countryCode", async (req: Request, res: Response) => {
  *               type:
  *                 type: string
  *                 example: valid
- *                 description: Type of phone number to generate ('valid' or 'random')
+ *                 description: Type of phone number to generate ('valid' or 'random'). Case-insensitive.
  *               number:
  *                 type: integer
  *                 example: 10
- *                 description: Number of phone numbers to generate
+ *                 description: Number of phone numbers to generate. Must be a positive integer and cannot exceed 5000.
  *     responses:
  *       200:
  *         description: Phone numbers generation initiated successfully
@@ -161,21 +196,28 @@ router.get("/:countryCode", async (req: Request, res: Response) => {
  *                   type: string
  *                   example: Successfully queued 10 valid phone number generation requests.
  *       400:
- *         description: Bad request due to missing type or number
+ *         description: Bad request due to missing or invalid type or number
  *       500:
  *         description: Error sending messages to RabbitMQ
  */
 router.post("/generate", async (req: Request, res: Response) => {
   const { type, number } = req.body;
 
-  if (!type || !number) {
-    return res
-      .status(400)
-      .json({ error: "Missing type or number of phones to generate" });
+  // Validate 'type' to be either 'valid' or 'random'
+  if (
+    !type ||
+    (type.toLowerCase() !== "valid" && type.toLowerCase() !== "random")
+  ) {
+    return res.status(400).json({
+      error: "Type must be either 'valid' or 'random'.",
+    });
   }
 
-  if (number > 5000) {
-    return res.status(400).json({ error: "Number cannot be more than 5000" });
+  // Validate 'number' to be a positive integer less than or equal to 5000
+  if (!number || typeof number !== "number" || number <= 0 || number > 5000) {
+    return res.status(400).json({
+      error: "Number must be a positive integer no more than 5000.",
+    });
   }
 
   try {

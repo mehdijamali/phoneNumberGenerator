@@ -9,7 +9,7 @@ interface PhoneNumber extends Document {
 
 const PhoneNumberSchema: Schema = new Schema(
   {
-    countryCode: { type: String, required: true },
+    countryCode: { type: String, required: true, index: { unique: true } },
     nationalNumber: { type: String, required: true, index: { unique: true } },
     countryCallingCode: { type: String, required: true },
     isMobile: { type: Boolean },

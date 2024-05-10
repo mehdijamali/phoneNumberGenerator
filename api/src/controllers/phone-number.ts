@@ -1,13 +1,14 @@
 import PhoneNumberModel from "../models/PhoneNumberModel.js";
 
 class PhoneNumbersController {
+  private maxDefaultRecords = 100;
   async findAll(documentsToSkip = 0, limitOfDocuments?: number) {
     const query = PhoneNumberModel.find()
       .sort({ _id: 1 })
       .skip(documentsToSkip);
 
     if (limitOfDocuments !== undefined) {
-      query.limit(limitOfDocuments);
+      query.limit(limitOfDocuments || this.maxDefaultRecords);
     }
 
     return query.exec();
@@ -36,11 +37,18 @@ class PhoneNumbersController {
     return query.exec();
   }
 
+  async countAll(): Promise<number> {
+    return PhoneNumberModel.countDocuments();
+  }
+
   async countByCountryCode(
     countryCode: string,
     mobileOnly: boolean
   ): Promise<number> {
-    const queryObj = { countryCode, isMobile: mobileOnly };
+    const queryObj: any = { countryCode };
+    if (mobileOnly) {
+      queryObj.isMobile = true;
+    }
     return PhoneNumberModel.countDocuments(queryObj);
   }
 }
