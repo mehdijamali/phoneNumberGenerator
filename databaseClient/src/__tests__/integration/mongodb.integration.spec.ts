@@ -1,11 +1,14 @@
-import { connect, disconnect } from "../../services/db/connection.js";
-import PhoneNumber from "../../services/db/model/PhoneNumber.js";
-import { storeData } from "../../services/db/service.js";
-import { PhoneNumberMetaData } from "../../services/types.js";
+import { connect, disconnect } from "../../services/db/connection";
+import PhoneNumber from "../../services/db/model/PhoneNumber";
+import { storeData } from "../../services/db/service";
+import { PhoneNumberMetaData } from "../../services/types";
 
 describe("storeData Integration Test", () => {
+  const DB_URI = process.env.MONGO_DB_URI || "mongodb://localhost:27018";
+
+  const DB_NAME = process.env.MONGO_DB_NAME || "phoneNumbers";
   beforeAll(async () => {
-    await connect("1", "2");
+    await connect(DB_URI, DB_NAME);
   });
 
   afterAll(async () => {

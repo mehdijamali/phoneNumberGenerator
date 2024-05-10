@@ -1,5 +1,5 @@
-import { storeData } from "../db/service.js";
-import mqConnection, { RabbitMQConnection } from "./connection.js";
+import { storeData } from "../db/service";
+import mqConnection, { RabbitMQConnection } from "./connection";
 import dotenv from "dotenv";
 
 dotenv?.config();

@@ -19,19 +19,13 @@ services:
       timeout: 10s
       retries: 5
 
+
   mongodb:
-    image: mongo:latest
+    image: mongo:4
     ports:
-      - "27018:27017" 
-    environment:
-      MONGO_DB_HOST: localhost
-      MONGO_INITDB_ROOT_USERNAME: database_client_user
-      MONGO_INITDB_ROOT_PASSWORD: databaseclient_password
-      MONGO_DB_PORT: 27018
-    volumes:
-      - ./mongo_data:/data/db
+      - 27017:27017
     healthcheck:
-      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD","mongo", "--eval", "db.adminCommand('ping')", "--quiet"]
       interval: 1s
       timeout: 5s
       retries: 5

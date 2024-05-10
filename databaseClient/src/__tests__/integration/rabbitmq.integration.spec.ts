@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
-import { RabbitMQConnection } from "../../services/rabbitmq/connection.js";
-import { subscribeToDbClientChannel } from "../../services/rabbitmq/service.js";
+import { RabbitMQConnection } from "../../services/rabbitmq/connection";
+import { subscribeToDbClientChannel } from "../../services/rabbitmq/service";
 
-import { PhoneNumberMetaData } from "../../services/types.js";
-import * as dbService from "../../services/db/service.js";
+import { PhoneNumberMetaData } from "../../services/types";
+import * as dbService from "../../services/db/service";
 
 dotenv?.config();
 
@@ -69,10 +69,13 @@ describe("RabbitMQ Integration", () => {
     expect(spy).toHaveBeenCalledWith(
       expect.objectContaining({
         requestId: "test-valid",
-        country: "NL",
-        countryCallingCode: "31",
-        nationalNumber: "642420290",
-        isMobile: true,
+        phoneNumber: "31642420290",
+        metadata: {
+          country: "NL",
+          countryCallingCode: "31",
+          nationalNumber: "642420290",
+          isMobile: true,
+        },
       }),
       expect.anything()
     );
