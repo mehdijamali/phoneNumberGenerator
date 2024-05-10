@@ -10,7 +10,6 @@ const DB_URI =
 const DB_NAME = process.env.MONGO_DB_NAME || "phoneNumbers";
 export async function storeData(request: PhoneNumberMetaData): Promise<void> {
   await connect(DB_URI, DB_NAME);
-
   const data: {
     countryCode: string;
     nationalNumber: string;

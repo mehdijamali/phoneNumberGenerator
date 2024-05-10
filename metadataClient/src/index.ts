@@ -23,7 +23,7 @@ export async function handleRequest(
 
   const number = getPhoneNumberMetadata(Number(request.phoneNumber));
 
-  if (number) {
+  if (number && number?.country) {
     await channel?.assertQueue(responseQueue, { durable: true });
 
     const response = {
@@ -43,10 +43,13 @@ export async function handleRequest(
     console.log(
       `Metadata Client - Generated number for request ${request.requestId}`
     );
-  } else
+  } else {
+    console.log(request);
+
     console.log(
       `Metadata Client - Invalid Number ${request.phoneNumber} for ${request.requestId}`
     );
+  }
 }
 
 startService().catch(console.warn);
