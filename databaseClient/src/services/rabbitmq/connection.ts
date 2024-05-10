@@ -15,7 +15,7 @@ export class RabbitMQConnection {
       process.env.RABBITMQ_URL || "amqp://guest:guest@localhost:5672";
     console.log("RABBITMQ_URL", RABBITMQ_URL);
 
-    while (retries > 0) {
+    while (retries > 0 && !this?.connection) {
       try {
         console.log(
           `Attempting to connect to RabbitMQ Server. Retries left: ${retries}`
