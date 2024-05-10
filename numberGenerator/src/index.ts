@@ -1,11 +1,8 @@
 import * as amqplib from "amqplib";
 
-import {
-  generateRandomPhoneNumbers,
-  generateValidPhoneNumbers,
-} from "./utils.js";
+import { generateRandomPhoneNumbers, generateValidPhoneNumbers } from "./utils";
 
-import mqConnection, { RabbitMQConnection } from "./connection.js";
+import mqConnection, { RabbitMQConnection } from "./connection";
 
 export interface Request {
   id: string;

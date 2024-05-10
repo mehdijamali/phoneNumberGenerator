@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-import { RabbitMQConnection } from "../../connection.js";
-import { startService } from "../../index.js";
+import { RabbitMQConnection } from "../../connection";
+import { startService } from "../../index";
 
 dotenv?.config();
 

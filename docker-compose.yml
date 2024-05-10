@@ -4,8 +4,8 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     ports:
-      - "5672:5672"  # Standard RabbitMQ port
-      - "15672:15672"  # Management plugin
+      - "5672:5672"  
+      - "15672:15672"
     volumes:
       - "rabbitmq_data:/var/lib/rabbitmq"
     networks:
@@ -32,7 +32,7 @@ services:
 
 
   numbergenerator:
-    build: ./numberGenerator  # Path to your number generator service directory
+    build: ./numberGenerator
     ports:
       - "3001:3001"
     depends_on:
@@ -41,30 +41,30 @@ services:
       NUMBER_GENERATOR_QUEUE: NUMBER_GENERATOR_QUEUE
       METADATA_CLIENT_QUEUE: METADATA_CLIENT_QUEUE
       DATABASE_CLIENT_QUEUE: DATABASE_CLIENT_QUEUE
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq  # Default credentials, adjusted URL
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq 
     networks:
       - app-network
 
   metadataclient:
-    build: ./metadataClient  # Path to your number generator service directory
+    build: ./metadataClient
     ports:
       - "4001:4001"
     depends_on:
       - rabbitmq
     environment:
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq  # Default credentials, adjusted URL
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq 
     networks:
       - app-network
 
   databaseclient:
-    build: ./databaseClient  # Path to your number generator service directory
+    build: ./databaseClient
     ports:
       - "5000:5000"
     depends_on:
       - rabbitmq
       - mongodb
     environment:
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq  # Default credentials, adjusted URL
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq 
       MONGO_DB_URI: mongodb://mongo_user:mongo_pass@host.docker.internal:27018
       MONGO_DB_NAME: "phoneNumbers"
 
@@ -72,7 +72,7 @@ services:
     networks:
       - app-network
   api:
-    build: ./api  # Path to your number generator service directory
+    build: ./api
     ports:
       - "3000:3000"
     depends_on:
@@ -81,7 +81,7 @@ services:
     restart: always
     environment:
       MONGO_DB_URI: mongodb://mongo_user:mongo_pass@host.docker.internal:27018
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq  # Default credentials, adjusted URL
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq 
       MONGO_DB_NAME: phoneNumbers
       API_HOST: localhost
       PORT: 3000
