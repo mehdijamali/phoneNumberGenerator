@@ -4,7 +4,7 @@
 
 The Phone Number Generator is a project that consists of a pipeline designed to generate random phone numbers, enrich them with metadata, and store them in a database for retrieval.
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/8cd0d018-9a2e-4347-ace6-a4e45dfa64c1/896698d2-1507-4c5f-956e-4c7c2a52def8/Untitled.png)
+![image](https://github.com/mehdijamali/phoneNumberGenerator/assets/9283591/6ffe8528-5935-4726-9145-da0fa4b62d2f)
 
 ### **Data Flow**
 
@@ -29,7 +29,8 @@ The process begins when a request is placed on a message queue, which is consume
    - An API service is included to retrieve data from the database.
    - It also allows the generation of new numbers by placing requests on RabbitMQ
 
-   ![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/8cd0d018-9a2e-4347-ace6-a4e45dfa64c1/6a314c41-0dae-4c2a-bed0-e108ea95b1b4/Untitled.png)
+  ![image](https://github.com/mehdijamali/phoneNumberGenerator/assets/9283591/36e6d898-9478-4e87-9029-d8f54f24ee16)
+
 
    ***
 
