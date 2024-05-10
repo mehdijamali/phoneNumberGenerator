@@ -17,7 +17,9 @@ export function generateValidPhoneNumbers() {
     );
 
     isValid = Boolean(
-      phoneNumber?.isValid() && phoneNumber?.countryCallingCode
+      phoneNumber?.isValid() &&
+        phoneNumber?.countryCallingCode &&
+        phoneNumber.country
     );
   } while (!isValid);
 

@@ -38,8 +38,6 @@ services:
 
   numbergenerator:
     build: ./numberGenerator
-    ports:
-      - "3001:3001"
     restart: always
     depends_on:
      - rabbitmq
@@ -53,8 +51,6 @@ services:
 
   metadataclient:
     build: ./metadataClient
-    ports:
-      - "4001:4001"
     restart: always
     depends_on:
       - rabbitmq
@@ -65,8 +61,6 @@ services:
 
   databaseclient:
     build: ./databaseClient
-    ports:
-      - "5000:5000"
     depends_on:
       - rabbitmq
       - mongodb

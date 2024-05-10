@@ -34,7 +34,9 @@
   },
   "dependencies": {
     "@types/amqplib": "^0.10.5",
+    "@types/async": "^3.2.24",
     "amqplib": "^0.10.4",
+    "async": "^3.2.5",
     "dotenv": "^16.4.5",
     "libphonenumber-js": "^1.11.1",
     "vite-node": "^1.6.0"
