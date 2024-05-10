@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "amqplib": "^0.10.4"
-  },
-  "devDependencies": {
-    "@types/node": "^20.12.11"
-  }
-}
