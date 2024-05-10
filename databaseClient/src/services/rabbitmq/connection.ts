@@ -8,25 +8,38 @@ export class RabbitMQConnection {
   channel!: Channel | null;
   connected!: Boolean;
 
-  async connectRabbitMQ() {
+  async connectRabbitMQ(retries: number = 10, backoff: number = 1000) {
     if (this.connected && this.channel) return;
-    this.connected = true;
 
-    const RABBITMQ_URL = `amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`;
+    const RABBITMQ_URL =
+      process.env.RABBITMQ_URL || "amqp://guest:guest@localhost:5672";
+    console.log("RABBITMQ_URL", RABBITMQ_URL);
 
-    try {
-      console.log(`Connecting to Rabbit-MQ Server`);
-      this.connection = await connect(RABBITMQ_URL);
+    while (retries > 0) {
+      try {
+        console.log(
+          `Attempting to connect to RabbitMQ Server. Retries left: ${retries}`
+        );
+        this.connection = await connect(RABBITMQ_URL);
+        console.log("RabbitMQ Connection is ready");
 
-      console.log(`Rabbit MQ Connection is ready`);
+        this.channel = await this.connection.createChannel();
+        console.log("Created RabbitMQ Channel successfully");
 
-      this.channel = await this.connection.createChannel();
-
-      console.log("Created RabbitMQ Channel successfully");
-    } catch (error) {
-      console.error(error);
-      console.error(`Not connected to MQ Server`);
-      this.connected = false;
+        this.connected = true;
+        return;
+      } catch (error) {
+        console.error("Connection to RabbitMQ failed:", error);
+        retries--;
+        if (retries === 0) {
+          console.error("Max retries reached. Failed to connect to RabbitMQ.");
+          this.connected = false;
+          throw error;
+        }
+        console.log(`Waiting ${backoff}ms before retry...`);
+        await new Promise((resolve) => setTimeout(resolve, backoff));
+        backoff *= 2; // Exponential backoff
+      }
     }
   }
 

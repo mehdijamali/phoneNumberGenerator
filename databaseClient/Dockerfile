@@ -1,8 +1,9 @@
 FROM node:16
-WORKDIR /src
+WORKDIR /
 COPY package*.json ./
 RUN npm install
 COPY . .
-EXPOSE 3002
+RUN npm run build
+EXPOSE 5004
 ENV NODE_ENV production
-CMD ["tsc", "src/index.ts"]
+CMD ["npm", "run", "prod"]

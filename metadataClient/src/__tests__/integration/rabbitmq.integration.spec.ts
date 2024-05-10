@@ -1,9 +1,8 @@
 import dotenv from "dotenv";
-import { RabbitMQConnection } from "../../connection.ts";
-import { MetaDataRequest, startService } from "../../index.ts";
-import { getPhoneNumberMetadata } from "../../utils.ts";
+import { RabbitMQConnection } from "../../connection.js";
+import { MetaDataRequest, startService } from "../../index.js";
 
-dotenv.config();
+dotenv?.config();
 
 describe("RabbitMQ Integration", () => {
   let rabbitmq: RabbitMQConnection;
@@ -45,7 +44,7 @@ describe("RabbitMQ Integration", () => {
     //       metadata: getPhoneNumberMetadata(phoneNumber),
 
     const testRequest: MetaDataRequest = {
-      id: "test-valid",
+      requestId: "test-valid",
       phoneNumber,
     };
 
@@ -78,7 +77,7 @@ describe("RabbitMQ Integration", () => {
 
     const receivedMessage: any = await responsePromise;
 
-    expect(receivedMessage.id).toEqual(testRequest.id);
+    expect(receivedMessage.id).toEqual(testRequest.requestId);
     expect(receivedMessage.phoneNumber).toBeDefined();
     expect(receivedMessage.metadata).toBeDefined();
   });
@@ -86,7 +85,7 @@ describe("RabbitMQ Integration", () => {
     const phoneNumber = 99642420290;
 
     const testRequest: MetaDataRequest = {
-      id: "test-invalid",
+      requestId: "test-invalid",
       phoneNumber,
     };
 

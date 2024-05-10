@@ -1,7 +1,10 @@
 export type PhoneNumberMetaData = {
-  id: string;
-  country: string;
-  nationalNumber: string;
-  countryCallingCode: string;
-  isMobile?: boolean;
+  requestId: string;
+  phoneNumber: string;
+  metadata: {
+    country: string;
+    nationalNumber: string;
+    countryCallingCode: string;
+    isMobile?: boolean;
+  };
 };

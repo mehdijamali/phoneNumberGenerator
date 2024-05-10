@@ -2,7 +2,7 @@ import parsePhoneNumberFromString from "libphonenumber-js";
 import {
   generateValidPhoneNumbers,
   generateRandomPhoneNumbers,
-} from "../../utils.ts";
+} from "../../utils";
 
 describe("getRandomPhoneNumbers", () => {
   it("should generate a valid phone number as a number", () => {

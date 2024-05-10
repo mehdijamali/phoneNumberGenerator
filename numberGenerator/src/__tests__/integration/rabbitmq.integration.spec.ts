@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
-import { RabbitMQConnection } from "../../connection.ts";
-import { startService } from "../../index.ts";
+import { RabbitMQConnection } from "../../connection.js";
+import { startService } from "../../index.js";
 
-dotenv.config();
+dotenv?.config();
 
 describe("RabbitMQ Integration", () => {
   let rabbitmq: RabbitMQConnection;

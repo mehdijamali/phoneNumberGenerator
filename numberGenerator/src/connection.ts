@@ -1,34 +1,44 @@
 import client, { Channel, Connection, Message } from "amqplib";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv?.config();
 export class RabbitMQConnection {
   connection!: Connection | null;
   channel!: Channel | null;
   connected!: Boolean;
 
-  async connect() {
+  async connect(retries: number = 5, backoff: number = 1000) {
     if (this.connected && this.channel) return;
-    this.connected = true;
 
-    try {
-      console.log(`Connecting to Rabbit-MQ Server`);
-      this.connection = await client.connect(
-        process.env.RABBITMQ_URL || "amqp://localhost:5672"
-      );
+    const RABBITMQ_URL =
+      process.env.RABBITMQ_URL || "amqp://guest:guest@localhost:5672";
 
-      console.log(`Rabbit MQ Connection is ready`);
+    while (retries > 0) {
+      try {
+        console.log(
+          `Attempting to connect to RabbitMQ Server. Retries left: ${retries}`
+        );
+        this.connection = await client.connect(RABBITMQ_URL);
+        console.log(`RabbitMQ Connection is ready`);
 
-      this.channel = await this.connection.createChannel();
-
-      console.log("Created RabbitMQ Channel successfully");
-    } catch (error) {
-      console.error(error);
-      console.error(`Not connected to MQ Server`);
-      this.connected = false;
+        this.channel = await this.connection.createChannel();
+        console.log("Created RabbitMQ Channel successfully");
+        this.connected = true;
+        return;
+      } catch (error) {
+        console.error("Connection to RabbitMQ failed:", error);
+        retries--;
+        if (retries === 0) {
+          console.error("Max retries reached. Failed to connect to RabbitMQ.");
+          this.connected = false;
+          throw error;
+        }
+        console.log(`Waiting ${backoff}ms before retry...`);
+        await new Promise((resolve) => setTimeout(resolve, backoff));
+        backoff *= 2; // Exponential backoff
+      }
     }
   }
-
   async sendToQueue(queue: string, message: any) {
     try {
       await this.channel?.sendToQueue(

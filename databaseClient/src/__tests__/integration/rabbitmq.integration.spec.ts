@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
-import { RabbitMQConnection } from "../../services/rabbitmq/connection";
-import { subscribeToDbClientChannel } from "../../services/rabbitmq/service";
+import { RabbitMQConnection } from "../../services/rabbitmq/connection.js";
+import { subscribeToDbClientChannel } from "../../services/rabbitmq/service.js";
 
-import { PhoneNumberMetaData } from "../../services/types";
-import * as dbService from "../../services/db/service";
+import { PhoneNumberMetaData } from "../../services/types.js";
+import * as dbService from "../../services/db/service.js";
 
 dotenv?.config();
 
@@ -14,7 +14,7 @@ jest.mock("../../services/db/service", () => ({
 describe("RabbitMQ Integration", () => {
   let rabbitmq: RabbitMQConnection;
   let consumerTag: string | null;
-  let spy;
+  let spy: any;
 
   const requestQueue = process.env.DB_CLIENT_QUEUE || "DB_CLIENT_QUEUE";
 
@@ -46,11 +46,14 @@ describe("RabbitMQ Integration", () => {
 
   test("should process a valid meta data request", async () => {
     const testRequest: PhoneNumberMetaData = {
-      id: "test-valid",
-      country: "NL",
-      countryCallingCode: "31",
-      nationalNumber: "642420290",
-      isMobile: true,
+      requestId: "test-valid",
+      phoneNumber: "31642420290",
+      metadata: {
+        country: "NL",
+        countryCallingCode: "31",
+        nationalNumber: "642420290",
+        isMobile: true,
+      },
     };
 
     await rabbitmq.channel?.assertQueue(requestQueue, { durable: true });
@@ -65,7 +68,7 @@ describe("RabbitMQ Integration", () => {
 
     expect(spy).toHaveBeenCalledWith(
       expect.objectContaining({
-        id: "test-valid",
+        requestId: "test-valid",
         country: "NL",
         countryCallingCode: "31",
         nationalNumber: "642420290",

@@ -1,15 +1,15 @@
 import amqp, { Message } from "amqplib";
-import { getPhoneNumberMetadata } from "./utils.ts";
-import mqConnection, { RabbitMQConnection } from "./connection.ts";
+import { getPhoneNumberMetadata } from "./utils.js";
+import mqConnection, { RabbitMQConnection } from "./connection.js";
 
 export interface MetaDataRequest {
-  id: string;
+  requestId: string;
   phoneNumber: number;
 }
 
 export async function startService(): Promise<RabbitMQConnection> {
   const requestQueue =
-    process.env.METADATA_CLIENT_QUEUE || "phone_number_responses";
+    process.env.METADATA_CLIENT_QUEUE || "METADATA_CLIENT_QUEUE";
 
   if (!mqConnection.connection) await mqConnection.connect();
 
@@ -22,14 +22,14 @@ async function handleRequest(
   request: MetaDataRequest,
   channel: amqp.Channel | null
 ): Promise<void> {
-  const responseQueue = process.env.METADATA_CLIENT_QUEUE || "DB_CLIENT_QUEUE";
+  const responseQueue = process.env.DB_CLIENT_QUEUE || "DB_CLIENT_QUEUE";
 
   const number = getPhoneNumberMetadata(Number(request.phoneNumber));
   if (number) {
     await channel?.assertQueue(responseQueue, { durable: true });
 
     const response = {
-      id: request.id,
+      requestId: request.requestId,
       phoneNumber: request.phoneNumber,
       metadata: number,
     };
@@ -42,10 +42,14 @@ async function handleRequest(
       }
     );
 
-    console.log(`Metadata Client - Generated number for request ${request.id}`);
+    console.log(request, response);
+
+    console.log(
+      `Metadata Client - Generated number for request ${request.requestId}`
+    );
   } else
     console.log(
-      `Metadata Client - Invalid Number ${request.phoneNumber} for ${request.id}`
+      `Metadata Client - Invalid Number ${request.phoneNumber} for ${request.requestId}`
     );
 }
 

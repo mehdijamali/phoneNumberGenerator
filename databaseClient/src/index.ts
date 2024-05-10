@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { subscribeToDbClientChannel } from "./services/rabbitmq/service";
+import { subscribeToDbClientChannel } from "./services/rabbitmq/service.js";
 
 dotenv?.config();
 

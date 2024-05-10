@@ -11,24 +11,23 @@ export const connect = async (
       console.log("Attempting to connect to MongoDB.");
       await mongoose.connect(database_uri, { dbName: database_name });
       console.log("Connected to MongoDB");
-      return; // Exit after successful connection
+      return;
     } catch (error) {
       console.error("Error connecting to MongoDB:", error);
-      retries--; // Decrement the retries left
+      retries--;
       if (retries === 0) {
         console.error("Max retries reached. Failed to connect to MongoDB.");
-        throw error; // Throw the error after the last retry
+        throw error;
       }
       console.log(`Retrying after ${backoff}ms...`);
       await new Promise((resolve) => setTimeout(resolve, backoff));
-      backoff *= 2; // Exponential backoff
+      backoff *= 2;
     }
   }
 };
 
 export const disconnect = async () => {
   if (mongoose.connection.readyState !== 0) {
-    // Not disconnected
     try {
       await mongoose.disconnect();
       console.log("Disconnected from MongoDB");

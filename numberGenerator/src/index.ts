@@ -1,10 +1,11 @@
-import amqp from "amqplib";
+import * as amqplib from "amqplib";
+
 import {
   generateRandomPhoneNumbers,
   generateValidPhoneNumbers,
-} from "./utils.ts";
+} from "./utils.js";
 
-import mqConnection, { RabbitMQConnection } from "./connection.ts";
+import mqConnection, { RabbitMQConnection } from "./connection.js";
 
 export interface Request {
   id: string;
@@ -14,7 +15,7 @@ export interface Request {
 export async function startService(): Promise<RabbitMQConnection> {
   if (!mqConnection.connection) await mqConnection.connect();
   mqConnection.consume(
-    process.env.NUMBER_GENERATOR_QUEUE || "phone_number_requests",
+    process.env.NUMBER_GENERATOR_QUEUE || "NUMBER_GENERATOR_QUEUE",
     handleRequest
   );
 
@@ -23,10 +24,10 @@ export async function startService(): Promise<RabbitMQConnection> {
 
 async function handleRequest(
   request: Request,
-  channel: amqp.Channel | null
+  channel: amqplib.Channel | null
 ): Promise<void> {
   const responseQueue =
-    process.env.METADATA_CLIENT_QUEUE || "phone_number_responses";
+    process.env.METADATA_CLIENT_QUEUE || "METADATA_CLIENT_QUEUE";
   await channel?.assertQueue(responseQueue, { durable: true });
 
   const number =

@@ -1,6 +1,6 @@
 import { connect } from "amqplib";
 import dotenv from "dotenv";
-import * as service from "../../index";
+import * as service from "../../index.js";
 
 dotenv?.config();
 jest.mock("amqplib", () => {

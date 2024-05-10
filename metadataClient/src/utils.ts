@@ -43,3 +43,5 @@ export function isMobile(number: string, countryCode: CountryCode) {
   }
   return false;
 }
+
+export default { isMobile, getPhoneNumberMetadata };

@@ -1,13 +1,11 @@
-import client, { Channel, Connection, Message } from "amqplib";
-import dotenv from "dotenv";
+import { Channel, Connection, Message, connect } from "amqplib";
 
-dotenv?.config();
 export class RabbitMQConnection {
   connection!: Connection | null;
   channel!: Channel | null;
   connected!: Boolean;
 
-  async connect(retries: number = 10, backoff: number = 1000) {
+  async connectRabbitMQ(retries: number = 10, backoff: number = 1000) {
     if (this.connected && this.channel) return;
 
     const RABBITMQ_URL =
@@ -19,11 +17,12 @@ export class RabbitMQConnection {
         console.log(
           `Attempting to connect to RabbitMQ Server. Retries left: ${retries}`
         );
-        this.connection = await client.connect(RABBITMQ_URL);
-        console.log(`RabbitMQ Connection is ready`);
+        this.connection = await connect(RABBITMQ_URL);
+        console.log("RabbitMQ Connection is ready");
 
         this.channel = await this.connection.createChannel();
         console.log("Created RabbitMQ Channel successfully");
+
         this.connected = true;
         return;
       } catch (error) {
@@ -58,7 +57,7 @@ export class RabbitMQConnection {
     callBack?: (request: any, channel: Channel | null) => Promise<void>
   ) {
     if (!this.channel) {
-      await this.connect();
+      await this.connectRabbitMQ();
     }
     await this.channel?.assertQueue(queue, { durable: true });
     await this.channel?.consume(queue, async (msg: Message | null) => {
