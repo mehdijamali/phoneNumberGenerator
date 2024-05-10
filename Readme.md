@@ -90,7 +90,7 @@ The process begins when a request is placed on a message queue, which is consume
    http://localhost:3000/api/docs
    ```
 
-   This documentation provides a user-friendly interface to interact with the API endpoints directly from your browser.
+   This documentation is done using OpenAPI specification and using [Swagger](https://swagger.io/) provides a user-friendly interface to interact with the API endpoints directly from your browser.
 
    ## Testing
 
