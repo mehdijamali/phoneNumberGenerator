@@ -1,13 +1,8 @@
 #!/bin/bash
 
-export RABBITMQ_URL="amqp://metadata_client_user:metadata_client_password@localhost:5673"
-export DB_CLIENT_QUEUE="metadata_responses"
-export METADATA_CLIENT_QUEUE="phone_number_responses"
-export MONGO_DB_URI="mongodb://database_client_user:databaseclient_password@localhost:27020"
-  
-  RABBITMQ_URL: amqp://guest:guest@rabbitmq  # Default credentials, adjusted URL
-  MONGO_DB_URI: mongodb://mongo_user:mongo_pass@host.docker.internal:27018
-  MONGO_DB_NAME: "phoneNumbers"
+export RABBITMQ_URL="amqp://test_user:test_pass@localhost:5673"
+export METADATA_CLIENT_QUEUE="METADATA_CLIENT_QUEUE"
+export DB_CLIENT_QUEUE="DB_CLIENT_QUEUE"
 
 echo "Starting RabbitMQ container for testing..."
 docker-compose -f docker-compose.test.yml up -d
@@ -19,6 +14,7 @@ done
 
 echo "Running integration tests..."
 npm run test:integration
+
 
 echo "Stopping RabbitMQ container..."
 docker-compose -f docker-compose.test.yml down

@@ -1,30 +1,28 @@
 import amqp, { Message } from "amqplib";
-import { getPhoneNumberMetadata } from "./utils.js";
-import mqConnection, { RabbitMQConnection } from "./connection.js";
+import { getPhoneNumberMetadata } from "./utils";
 
+import { subscribeToChannel } from "./services/rabbitmq/service";
+import mqConnection from "./services/rabbitmq/connection";
 export interface MetaDataRequest {
   requestId: string;
   phoneNumber: number;
 }
 
-export async function startService(): Promise<RabbitMQConnection> {
+export async function startService(): Promise<void> {
   const requestQueue =
     process.env.METADATA_CLIENT_QUEUE || "METADATA_CLIENT_QUEUE";
 
-  if (!mqConnection.connection) await mqConnection.connect();
-
-  mqConnection.consume(requestQueue, handleRequest);
-
-  return mqConnection;
+  await subscribeToChannel(mqConnection, requestQueue, handleRequest);
 }
 
-async function handleRequest(
+export async function handleRequest(
   request: MetaDataRequest,
   channel: amqp.Channel | null
 ): Promise<void> {
   const responseQueue = process.env.DB_CLIENT_QUEUE || "DB_CLIENT_QUEUE";
 
   const number = getPhoneNumberMetadata(Number(request.phoneNumber));
+
   if (number) {
     await channel?.assertQueue(responseQueue, { durable: true });
 
@@ -42,8 +40,6 @@ async function handleRequest(
       }
     );
 
-    console.log(request, response);
-
     console.log(
       `Metadata Client - Generated number for request ${request.requestId}`
     );
@@ -54,3 +50,5 @@ async function handleRequest(
 }
 
 startService().catch(console.warn);
+
+export default { startService, handleRequest };

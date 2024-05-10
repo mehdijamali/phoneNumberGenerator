@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "prod": "NODE_ENV=production node dist/index.js",
+    "build": "tsc --project tsconfig.build.json",
+    "prod": "NODE_ENV=production node --experimental-specifier-resolution=node  dist/.",
     "dev": "NODE_ENV=test vite-node src/index.ts",
     "test:unit": "jest --config jest.unit.config.cjs",
     "test:integration": "jest --config jest.integration.config.cjs  --forceExit",

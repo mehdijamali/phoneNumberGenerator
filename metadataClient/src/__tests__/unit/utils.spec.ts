@@ -1,4 +1,4 @@
-import { getPhoneNumberMetadata, isMobile } from "../../utils.js";
+import { getPhoneNumberMetadata, isMobile } from "../../utils";
 
 describe("getPhoneNumberMetadata", () => {
   it("should return null if phone number is not valid number", () => {
