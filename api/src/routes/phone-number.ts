@@ -176,10 +176,6 @@ router.get("/:countryCode", async (req: Request, res: Response) => {
  *           schema:
  *             type: object
  *             properties:
- *               type:
- *                 type: string
- *                 example: valid
- *                 description: Type of phone number to generate ('valid' or 'random'). Case-insensitive.
  *               number:
  *                 type: integer
  *                 example: 10
@@ -194,24 +190,14 @@ router.get("/:countryCode", async (req: Request, res: Response) => {
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Successfully queued 10 valid phone number generation requests.
+ *                   example: Successfully queued 10 number generation requests.
  *       400:
  *         description: Bad request due to missing or invalid type or number
  *       500:
  *         description: Error sending messages to RabbitMQ
  */
 router.post("/generate", async (req: Request, res: Response) => {
-  const { type, number } = req.body;
-
-  // Validate 'type' to be either 'valid' or 'random'
-  if (
-    !type ||
-    (type.toLowerCase() !== "valid" && type.toLowerCase() !== "random")
-  ) {
-    return res.status(400).json({
-      error: "Type must be either 'valid' or 'random'.",
-    });
-  }
+  const { number } = req.body;
 
   // Validate 'number' to be a positive integer less than or equal to 5000
   if (!number || typeof number !== "number" || number <= 0 || number > 5000) {
@@ -225,11 +211,10 @@ router.post("/generate", async (req: Request, res: Response) => {
     for (let i = 0; i < number; i++) {
       await mqConnection.sendToQueue("NUMBER_GENERATOR_QUEUE", {
         id: i,
-        type: type.toUpperCase(),
       });
     }
     res.status(200).json({
-      message: `Successfully queued ${number} ${type} phone number generation requests.`,
+      message: `Successfully queued ${number} number generation requests.`,
     });
   } catch (error) {
     console.error("Failed to queue messages:", error);

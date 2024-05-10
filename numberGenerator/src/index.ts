@@ -6,7 +6,6 @@ import mqConnection, { RabbitMQConnection } from "./connection";
 
 export interface Request {
   id: string;
-  type: "RANDOM" | "VALID";
 }
 
 export async function startService(): Promise<RabbitMQConnection> {
@@ -27,10 +26,7 @@ async function handleRequest(
     process.env.METADATA_CLIENT_QUEUE || "METADATA_CLIENT_QUEUE";
   await channel?.assertQueue(responseQueue, { durable: true });
 
-  const number =
-    request.type === "RANDOM"
-      ? generateRandomPhoneNumbers()
-      : generateValidPhoneNumbers();
+  const number = generateRandomPhoneNumbers();
   const response = {
     requestId: request.id,
     phoneNumber: number,

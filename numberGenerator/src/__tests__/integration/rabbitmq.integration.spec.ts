@@ -42,45 +42,6 @@ describe("RabbitMQ Integration", () => {
   test("should process a random phone generation request and send a response to the response queue", async () => {
     const testRequest = {
       id: "test123",
-      type: "RANDOM",
-    };
-
-    await rabbitmq.channel?.assertQueue(requestQueue, { durable: true });
-    await rabbitmq.channel?.assertQueue(responseQueue, { durable: true });
-
-    rabbitmq.channel?.sendToQueue(
-      requestQueue,
-      Buffer.from(JSON.stringify(testRequest)),
-      { persistent: true }
-    );
-
-    // Listen to the response queue
-    const responsePromise = new Promise((resolve) => {
-      rabbitmq.channel
-        ?.consume(
-          responseQueue,
-          (msg) => {
-            if (msg) {
-              const response = JSON.parse(msg.content.toString());
-
-              rabbitmq.channel?.ack(msg);
-              resolve(response);
-            }
-          },
-          { noAck: false }
-        )
-        .then((ok) => (consumerTag = ok.consumerTag));
-    });
-
-    const receivedMessage: any = await responsePromise;
-
-    expect(receivedMessage.requestId).toEqual(testRequest.id);
-    expect(receivedMessage.phoneNumber).toBeDefined();
-  });
-  test("should process a valid phone generation request and send a response to the response queue", async () => {
-    const testRequest = {
-      id: "test123",
-      type: "VALID",
     };
 
     await rabbitmq.channel?.assertQueue(requestQueue, { durable: true });
