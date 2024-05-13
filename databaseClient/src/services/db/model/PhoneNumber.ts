@@ -7,16 +7,21 @@ interface PhoneNumber extends Document {
   isMobile?: boolean;
 }
 
-const PhoneNumberSchema: Schema = new Schema(
+const PhoneNumberSchema = new Schema(
   {
-    countryCode: { type: String, required: true },
-    nationalNumber: { type: String, required: true, index: { unique: true } },
+    countryCode: { type: String, required: true, index: true },
+    nationalNumber: { type: String, required: true },
     countryCallingCode: { type: String, required: true },
     isMobile: { type: Boolean },
   },
   {
     timestamps: true,
   }
+);
+
+PhoneNumberSchema.index(
+  { countryCallingCode: 1, nationalNumber: 1 },
+  { unique: true }
 );
 
 const PhoneNumberModel = mongoose.model<PhoneNumber>(
