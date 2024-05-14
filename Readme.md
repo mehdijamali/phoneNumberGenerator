@@ -23,10 +23,7 @@ The process begins when a request is placed on a message queue, which is consume
 3. **Database Client**
    - This service subscribes to the response channel of the Metadata Client.
    - It populates a MongoDB database with the processed data.
-4. **Database**
-   - Utilizes MongoDB to store phone numbers along with their metadata.
-5. **API Service**
-
+4. **API Service**
    - An API service is included to retrieve data from the database.
    - It also allows the generation of new numbers by placing requests on RabbitMQ
 
@@ -71,6 +68,8 @@ This command will continuously output the logs from the `number_generator_servic
 
 ## API Access
 
+You can use the API to generate new random numbers and then query data for phone numbers.
+
 The API is available at port `3000` by default. If this port is already in use on your system, you can change the port mapping in the `docker-compose.yml` file and restart the services.
 
 To access the API, navigate to:
@@ -89,6 +88,7 @@ http://localhost:3000/api/docs
 ```
 
 This documentation is done using OpenAPI specification and using [Swagger](https://swagger.io/) provides a user-friendly interface to interact with the API endpoints directly from your browser.
+
 
 ## Testing
 
